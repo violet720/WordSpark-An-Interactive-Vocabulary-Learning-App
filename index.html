@@ -1310,9 +1310,35 @@ function beginWord(){
       }
       else{
 
-        render();
+        if(
+          state.answerMode==='individual'
+        ){
 
-        broadcast();
+          const timerEl=
+            document.getElementById('timerDisplay');
+
+          if(timerEl){
+
+            timerEl.textContent=
+              state.timeLeft+'s';
+
+            timerEl.classList.toggle(
+              'danger',
+              state.timeLeft<=5
+            );
+
+          }
+
+          broadcast();
+
+        }
+        else{
+
+          render();
+
+          broadcast();
+
+        }
 
       }
 
@@ -2727,7 +2753,10 @@ function renderPlay(projection){
 
       </div>
 
-      <div class="timer ${state.timeLeft<=5?'danger':''}">
+      <div
+        id="timerDisplay"
+        class="timer ${state.timeLeft<=5?'danger':''}"
+      >
 
         ${state.timeLeft}s
 
