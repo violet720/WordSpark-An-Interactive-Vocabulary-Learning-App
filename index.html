@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -619,6 +620,90 @@ label{
   z-index:1;
 }
 
+
+.mode-cards{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+@media(max-width:620px){
+  .mode-cards{
+    grid-template-columns:1fr;
+  }
+}
+
+.mode-card{
+  border:1.5px solid var(--panel-line);
+  border-radius:12px;
+  padding:14px;
+  background:#fff;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.mode-card:hover{
+  border-color:var(--cyan);
+}
+
+.mode-card.active{
+  border-color:var(--cyan);
+  background:var(--cyan-dim);
+}
+
+.mode-card strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.mode-card span{
+  font-size:12px;
+  color:var(--ink-dim);
+  line-height:1.5;
+}
+
+.answer-box{
+  width:100%;
+  max-width:440px;
+  margin:4px auto 20px;
+}
+
+.answer-row{
+  display:flex;
+  gap:10px;
+}
+
+.answer-row input{
+  font-size:18px;
+  padding:13px 14px;
+  text-align:center;
+}
+
+.feedback{
+  margin-top:10px;
+  border-radius:10px;
+  padding:10px 14px;
+  text-align:center;
+  font-weight:700;
+  font-size:14px;
+}
+
+.feedback.good{
+  background:var(--green-dim);
+  color:var(--green);
+}
+
+.feedback.bad{
+  background:var(--red-dim);
+  color:var(--red);
+}
+
+.answer-reveal{
+  font-family:'JetBrains Mono';
+  font-size:18px;
+  margin-top:5px;
+}
+
 .end-wrap{
   flex:1;
   display:flex;
@@ -747,6 +832,8 @@ let state={
 
   shuffle:true,
 
+  answerMode:'classroom',
+
   sessionWords:[],
 
   current:0,
@@ -769,7 +856,11 @@ let state={
 
   savedSets:loadSets(),
 
-  isProjection:false
+  isProjection:false,
+
+  feedback:null,
+
+  locked:false
 };
 
 function loadSets(){
@@ -812,6 +903,16 @@ function escapeHtml(v){
       "'":'&#039;'
     }[m])
   );
+
+}
+
+
+function normalizeAnswer(v){
+
+  return String(v)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g,' ');
 
 }
 
@@ -1047,6 +1148,8 @@ function saveCurrentSet(){
 
     timePerWord:state.timePerWord,
 
+    answerMode:state.answerMode,
+
     updatedAt:new Date().toISOString()
 
   };
@@ -1157,6 +1260,10 @@ function startGame(){
 
   state.results=[];
 
+  state.feedback=null;
+
+  state.locked=false;
+
   state.screen='play';
 
   beginWord();
@@ -1174,6 +1281,10 @@ function beginWord(){
 
   state.revealed=false;
 
+  state.feedback=null;
+
+  state.locked=false;
+
   state.timerId=
     setInterval(()=>{
 
@@ -1183,7 +1294,18 @@ function beginWord(){
         state.timeLeft<=0
       ){
 
-        revealAnswer();
+        if(
+          state.answerMode==='individual'
+        ){
+
+          submitIndividual(true);
+
+        }
+        else{
+
+          revealAnswer();
+
+        }
 
       }
       else{
@@ -1199,6 +1321,23 @@ function beginWord(){
   render();
 
   broadcast();
+
+  if(
+    state.answerMode==='individual'
+  ){
+
+    setTimeout(()=>{
+
+      const input=
+        document.getElementById('answerInput');
+
+      if(input){
+        input.focus();
+      }
+
+    },50);
+
+  }
 
 }
 
@@ -1216,7 +1355,38 @@ function revealAnswer(){
 
 }
 
-function markResult(correct){
+function calculateGain(w){
+
+  state.combo++;
+
+  state.maxCombo=
+    Math.max(
+      state.maxCombo,
+      state.combo
+    );
+
+  const mult=
+    1+
+    Math.floor(
+      state.combo/3
+    )*.5;
+
+  const base=
+    w.level==='boss'
+    ?40
+    :(
+      w.level==='hard'
+      ?20
+      :10
+    );
+
+  return Math.round(
+    base*mult
+  );
+
+}
+
+function recordResult(correct,userAnswer=''){
 
   const w=
     state.sessionWords[
@@ -1227,33 +1397,8 @@ function markResult(correct){
 
   if(correct){
 
-    state.combo++;
-
-    state.maxCombo=
-      Math.max(
-        state.maxCombo,
-        state.combo
-      );
-
-    const mult=
-      1+
-      Math.floor(
-        state.combo/3
-      )*.5;
-
-    const base=
-      w.level==='boss'
-      ?40
-      :(
-        w.level==='hard'
-        ?20
-        :10
-      );
-
     gained=
-      Math.round(
-        base*mult
-      );
+      calculateGain(w);
 
     state.xp+=gained;
 
@@ -1280,13 +1425,96 @@ function markResult(correct){
 
     level:w.level,
 
-    gained
+    gained,
+
+    userAnswer
 
   });
 
+  return gained;
+
+}
+
+function markResult(correct){
+
+  if(state.locked)return;
+
+  state.locked=true;
+
+  recordResult(correct);
+
   setTimeout(
     nextWord,
-    300
+    350
+  );
+
+}
+
+function submitIndividual(timeout=false){
+
+  if(state.locked)return;
+
+  const w=
+    state.sessionWords[
+      state.current
+    ];
+
+  const input=
+    document.getElementById(
+      'answerInput'
+    );
+
+  const typed=
+    timeout
+    ?''
+    :(
+      input
+      ?input.value
+      :''
+    );
+
+  const correct=
+    !timeout
+    &&
+    normalizeAnswer(typed)
+    ===
+    normalizeAnswer(w.word);
+
+  clearInterval(
+    state.timerId
+  );
+
+  state.locked=true;
+
+  state.revealed=true;
+
+  const gained=
+    recordResult(
+      correct,
+      typed
+    );
+
+  state.feedback={
+
+    correct,
+
+    typed,
+
+    gained,
+
+    timeout
+
+  };
+
+  render();
+
+  broadcast();
+
+  setTimeout(
+    nextWord,
+    correct
+    ?1100
+    :1700
   );
 
 }
@@ -1356,6 +1584,10 @@ function retryWrong(){
 
   state.results=[];
 
+  state.feedback=null;
+
+  state.locked=false;
+
   state.screen='play';
 
   beginWord();
@@ -1369,6 +1601,10 @@ function backToSetup(){
   );
 
   state.screen='setup';
+
+  state.feedback=null;
+
+  state.locked=false;
 
   render();
 
@@ -1918,6 +2154,57 @@ function renderSetup(){
         <div>
 
           <label>
+            作答模式
+          </label>
+
+          <div class="mode-cards">
+
+            <div
+              class="mode-card ${state.answerMode==='classroom'?'active':''}"
+              onclick="
+                state.answerMode='classroom';
+                render();
+              "
+            >
+
+              <strong>
+                🖥 全班搶答模式
+              </strong>
+
+              <span>
+                老師控制揭曉答案與判定對錯，
+                適合投影機、電子白板與全班活動。
+              </span>
+
+            </div>
+
+            <div
+              class="mode-card ${state.answerMode==='individual'?'active':''}"
+              onclick="
+                state.answerMode='individual';
+                render();
+              "
+            >
+
+              <strong>
+                ⌨ 個人輸入模式
+              </strong>
+
+              <span>
+                學生自行輸入英文答案，
+                系統自動判斷正誤，
+                適合個人練習與 QR Code 體驗。
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div>
+
+          <label>
             每題倒數時間（秒）
           </label>
 
@@ -2017,7 +2304,11 @@ function renderSetup(){
           學生只看到題目。
           <br>
 
-          5. 測驗結束後，
+          5. 全班搶答模式由老師判定；
+          個人輸入模式則由系統自動判分。
+          <br>
+
+          6. 測驗結束後，
           可以直接進行錯題再挑戰。
 
         </div>
@@ -2042,9 +2333,9 @@ function renderSetup(){
 
     <span class="hint">
 
-      題庫不限 6 題，
-      可以自行建立大量單字，
-      再決定每次抽幾題。
+      題庫不限題數，
+      可自行建立大量單字，
+      並選擇全班搶答或個人輸入模式。
 
     </span>
 
@@ -2195,6 +2486,183 @@ function renderPlay(projection){
     ?'強化挑戰'
     :'一般挑戰';
 
+  let answerArea='';
+
+  if(
+    !projection
+    &&
+    state.answerMode==='individual'
+  ){
+
+    answerArea=`
+
+      <div class="answer-box">
+
+        ${
+          !state.locked
+
+          ?`
+
+          <div class="answer-row">
+
+            <input
+              id="answerInput"
+              type="text"
+              autocomplete="off"
+              placeholder="輸入英文答案…"
+              onkeydown="
+                if(event.key==='Enter')
+                  submitIndividual(false)
+              "
+            >
+
+            <button
+              class="btn"
+              onclick="submitIndividual(false)"
+            >
+              送出
+            </button>
+
+          </div>
+
+          `
+
+          :''
+        }
+
+        ${
+          state.feedback
+
+          ?`
+
+          <div class="feedback ${state.feedback.correct?'good':'bad'}">
+
+            ${
+              state.feedback.correct
+              ?`答對了！ +${state.feedback.gained} XP`
+              :state.feedback.timeout
+              ?'時間到！'
+              :'答錯了！'
+            }
+
+            ${
+              !state.feedback.correct
+
+              ?`
+
+              <div class="answer-reveal">
+                正確答案：${escapeHtml(w.word)}
+              </div>
+
+              `
+
+              :''
+            }
+
+          </div>
+
+          `
+
+          :''
+        }
+
+      </div>
+
+    `;
+
+  }
+
+  let controls='';
+
+  if(
+    !projection
+    &&
+    state.answerMode==='classroom'
+  ){
+
+    controls=`
+
+      <div class="play-controls">
+
+        ${
+          !state.revealed
+
+          ?`
+
+          <button
+            class="btn"
+            onclick="revealAnswer()"
+          >
+
+            🗝 解開封印
+
+          </button>
+
+          `
+
+          :`
+
+          <button
+            class="btn success"
+            onclick="markResult(true)"
+          >
+
+            ✓ 過關成功
+
+          </button>
+
+          <button
+            class="btn danger"
+            onclick="markResult(false)"
+          >
+
+            ✕ 挑戰失敗
+
+          </button>
+
+          `
+        }
+
+        <button
+          class="btn secondary"
+          onclick="backToSetup()"
+        >
+
+          返回教師端
+
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
+  if(
+    !projection
+    &&
+    state.answerMode==='individual'
+  ){
+
+    controls=`
+
+      <div class="play-controls">
+
+        <button
+          class="btn secondary"
+          onclick="backToSetup()"
+        >
+
+          離開挑戰
+
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
   return `
 
     <div class="hud">
@@ -2296,7 +2764,11 @@ function renderPlay(projection){
 
         ·
 
-        解開封印字母
+        ${
+          state.answerMode==='individual'
+          ?'請輸入正確英文拼字'
+          :'解開封印字母'
+        }
 
       </div>
 
@@ -2306,68 +2778,12 @@ function renderPlay(projection){
 
       </div>
 
+      ${answerArea}
+
     </div>
 
 
-    ${
-      projection
-      ?''
-      :`
-
-      <div class="play-controls">
-
-        ${
-          !state.revealed
-
-          ?`
-
-          <button
-            class="btn"
-            onclick="revealAnswer()"
-          >
-
-            🗝 解開封印
-
-          </button>
-
-          `
-
-          :`
-
-          <button
-            class="btn success"
-            onclick="markResult(true)"
-          >
-
-            ✓ 過關成功
-
-          </button>
-
-          <button
-            class="btn danger"
-            onclick="markResult(false)"
-          >
-
-            ✕ 挑戰失敗
-
-          </button>
-
-          `
-        }
-
-        <button
-          class="btn secondary"
-          onclick="backToSetup()"
-        >
-
-          返回教師端
-
-        </button>
-
-      </div>
-
-      `
-    }
+    ${controls}
 
   `;
 
