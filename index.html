@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -778,10 +779,6 @@ label{
   border-left-color:var(--red);
 }
 
-.projection-note{
-  font-size:11px;
-  color:var(--ink-dim);
-}
 
 .teacher-badge{
   font-size:11px;
@@ -810,13 +807,6 @@ label{
 <script>
 
 const STORAGE_KEY='violet_vocab_sets_v2';
-const CHANNEL='violet_vocab_projection_v2';
-
-let bc=null;
-
-try{
-  bc=new BroadcastChannel(CHANNEL);
-}catch(e){}
 
 let state={
   screen:'setup',
@@ -856,7 +846,6 @@ let state={
 
   savedSets:loadSets(),
 
-  isProjection:false,
 
   feedback:null,
 
@@ -1329,14 +1318,10 @@ function beginWord(){
 
           }
 
-          broadcast();
-
         }
         else{
 
           render();
-
-          broadcast();
 
         }
 
@@ -1345,8 +1330,6 @@ function beginWord(){
     },1000);
 
   render();
-
-  broadcast();
 
   if(
     state.answerMode==='individual'
@@ -1376,8 +1359,6 @@ function revealAnswer(){
   state.revealed=true;
 
   render();
-
-  broadcast();
 
 }
 
@@ -1534,8 +1515,6 @@ function submitIndividual(timeout=false){
 
   render();
 
-  broadcast();
-
   setTimeout(
     nextWord,
     correct
@@ -1559,8 +1538,6 @@ function nextWord(){
     state.screen='end';
 
     render();
-
-    broadcast();
 
   }
   else{
@@ -1634,102 +1611,6 @@ function backToSetup(){
 
   render();
 
-  broadcast();
-
-}
-
-function broadcast(){
-
-  if(!bc)return;
-
-  bc.postMessage({
-
-    screen:state.screen,
-
-    title:state.title,
-
-    timePerWord:
-      state.timePerWord,
-
-    sessionWords:
-      state.sessionWords,
-
-    current:
-      state.current,
-
-    timeLeft:
-      state.timeLeft,
-
-    revealed:
-      state.revealed,
-
-    hearts:
-      state.hearts,
-
-    combo:
-      state.combo,
-
-    maxCombo:
-      state.maxCombo,
-
-    xp:
-      state.xp,
-
-    results:
-      state.results
-
-  });
-
-}
-
-function openProjection(){
-
-  const w=
-    window.open(
-      location.href+'#projection',
-      'VioletProjection',
-      'width=1200,height=800'
-    );
-
-  if(!w){
-
-    alert(
-      '瀏覽器阻擋了投影視窗，請允許彈出視窗。'
-    );
-
-  }
-
-  setTimeout(
-    broadcast,
-    700
-  );
-
-}
-
-if(
-  location.hash==='#projection'
-){
-
-  state.isProjection=true;
-
-  if(bc){
-
-    bc.onmessage=e=>{
-
-      Object.assign(
-        state,
-        e.data
-      );
-
-      render();
-
-    };
-
-  }
-
-  document.title=
-    '詞彙異境 · 投影模式';
-
 }
 
 function render(){
@@ -1738,49 +1619,12 @@ function render(){
     document
     .getElementById('board');
 
-  if(
-    state.isProjection
-  ){
-
-    board.innerHTML=
-      state.screen==='play'
-      ?renderPlay(true)
-      :state.screen==='end'
-      ?renderEnd(true)
-      :renderProjectionWaiting();
-
-    return;
-
-  }
-
   board.innerHTML=
     state.screen==='setup'
     ?renderSetup()
     :state.screen==='play'
-    ?renderPlay(false)
-    :renderEnd(false);
-
-}
-
-function renderProjectionWaiting(){
-
-  return `
-    <div class="end-wrap">
-
-      <div class="eyebrow">
-        Student Projection
-      </div>
-
-      <h1>
-        詞彙異境
-      </h1>
-
-      <div class="sub">
-        等待老師開始任務…
-      </div>
-
-    </div>
-  `;
+    ?renderPlay()
+    :renderEnd();
 
 }
 
@@ -1912,8 +1756,7 @@ function renderSetup(){
       </h1>
 
       <div class="sub">
-        老師端管理題庫；
-        學生投影端不會看到答案。
+        課前建立題庫；上課時直接選擇全班搶答或個人輸入模式。
       </div>
 
     </div>
@@ -1931,12 +1774,6 @@ function renderSetup(){
         載入 15 題範例
       </button>
 
-      <button
-        class="btn small secondary"
-        onclick="openProjection()"
-      >
-        開啟學生投影視窗
-      </button>
 
     </div>
 
@@ -2319,31 +2156,16 @@ function renderSetup(){
           1. 課前建立並儲存題庫。
           <br>
 
-          2. 上課載入題庫，
-          設定抽題數。
+          2. 上課載入題庫，設定抽題數與出題順序。
           <br>
 
-          3. 開啟學生投影視窗。
+          3. 全班活動選「全班搶答模式」，直接把目前畫面投影到教室螢幕。
           <br>
 
-          4. 老師保留控制畫面，
-          學生只看到題目。
+          4. 個人練習或 QR Code 體驗選「個人輸入模式」，使用者可直接輸入英文答案。
           <br>
 
-          5. 全班搶答模式由老師判定；
-          個人輸入模式則由系統自動判分。
-          <br>
-
-          6. 測驗結束後，
-          可以直接進行錯題再挑戰。
-
-        </div>
-
-        <div class="projection-note">
-
-          如果使用延伸桌面，
-          可以把學生視窗放到投影機，
-          老師端則留在自己的電腦。
+          5. 測驗結束後，可以直接進行錯題再挑戰。
 
         </div>
 
@@ -2381,7 +2203,7 @@ function renderSetup(){
 
 }
 
-function renderPlay(projection){
+function renderPlay(){
 
   const w=
     state.sessionWords[
@@ -2390,7 +2212,7 @@ function renderPlay(projection){
 
   if(!w){
 
-    return renderProjectionWaiting();
+    return '<div class="empty">目前沒有可顯示的題目。</div>';
 
   }
 
@@ -2515,8 +2337,6 @@ function renderPlay(projection){
   let answerArea='';
 
   if(
-    !projection
-    &&
     state.answerMode==='individual'
   ){
 
@@ -2601,8 +2421,6 @@ function renderPlay(projection){
   let controls='';
 
   if(
-    !projection
-    &&
     state.answerMode==='classroom'
   ){
 
@@ -2654,7 +2472,7 @@ function renderPlay(projection){
           onclick="backToSetup()"
         >
 
-          返回教師端
+          返回設定
 
         </button>
 
@@ -2665,8 +2483,6 @@ function renderPlay(projection){
   }
 
   if(
-    !projection
-    &&
     state.answerMode==='individual'
   ){
 
@@ -2818,7 +2634,7 @@ function renderPlay(projection){
 
 }
 
-function renderEnd(projection){
+function renderEnd(){
 
   const total=
     state.results.length;
@@ -3005,10 +2821,7 @@ function renderEnd(projection){
 
       </div>
 
-      ${
-        projection
-        ?''
-        :`
+      ${`
 
         <div class="play-controls">
 
@@ -3036,14 +2849,13 @@ function renderEnd(projection){
             onclick="backToSetup()"
           >
 
-            返回教師端
+            返回設定
 
           </button>
 
         </div>
 
-        `
-      }
+        `}
 
     </div>
 
