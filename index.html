@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>詞彙異境 · 單字闖關</title>
+<title>WordSpark · Interactive Vocabulary Challenge</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap');
 
@@ -26,598 +27,2588 @@
   --red-dim:#e0314f1a;
 }
 
-*{box-sizing:border-box; margin:0; padding:0;}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
 body{
-  font-family:'Inter', sans-serif;
-  background: radial-gradient(circle at 20% 0%, #dce3f7 0%, var(--bg-1) 55%), var(--bg-1);
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(circle at 20% 0%,#dce3f7 0%,var(--bg-1) 55%),
+    var(--bg-1);
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:24px 16px;
   color:var(--ink);
-  overflow-x:hidden;
 }
 
-#stage{ width:100%; max-width:1000px; position:relative; }
+#stage{
+  width:100%;
+  max-width:1080px;
+  position:relative;
+}
 
 #board{
   position:relative;
   background:
-    linear-gradient(180deg, rgba(14,154,140,0.03), transparent 40%),
+    linear-gradient(180deg,rgba(14,154,140,.03),transparent 40%),
     var(--panel);
   border:1px solid var(--panel-line);
   border-radius:16px;
-  min-height:620px;
+  min-height:660px;
   padding:30px 34px;
   display:flex;
   flex-direction:column;
-  box-shadow: 0 20px 50px rgba(28,35,64,0.1), inset 0 0 0 1px rgba(255,255,255,0.6);
+  box-shadow:0 20px 50px rgba(28,35,64,.1);
   overflow:hidden;
 }
+
 #board::before{
   content:'';
-  position:absolute; inset:0;
+  position:absolute;
+  inset:0;
   background-image:
-    linear-gradient(rgba(28,35,64,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(28,35,64,0.025) 1px, transparent 1px);
-  background-size: 34px 34px;
+    linear-gradient(rgba(28,35,64,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(28,35,64,.025) 1px,transparent 1px);
+  background-size:34px 34px;
   pointer-events:none;
 }
 
-h1,h2,.display{ font-family:'Rajdhani', sans-serif; font-weight:700; letter-spacing:0.01em; }
-.numeric{ font-family:'Orbitron', sans-serif; }
+h1,h2,.display{
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+}
 
-button{ font-family:'Rajdhani', sans-serif; cursor:pointer; border:none; outline:none; }
+.numeric{
+  font-family:'Orbitron',sans-serif;
+}
+
+button{
+  font-family:'Rajdhani',sans-serif;
+  cursor:pointer;
+  border:none;
+  outline:none;
+}
 
 .btn{
-  position:relative; z-index:1;
-  background: linear-gradient(135deg, var(--cyan), #2bc4b0);
-  color:#06251f; font-weight:700; font-size:16px; letter-spacing:0.03em;
-  padding:13px 30px; border-radius:8px;
-  box-shadow: 0 6px 0 #1d7f72, 0 8px 18px rgba(77,227,209,0.25);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  background:linear-gradient(135deg,var(--cyan),#2bc4b0);
+  color:#06251f;
+  font-weight:700;
+  font-size:16px;
+  padding:12px 24px;
+  border-radius:8px;
+  box-shadow:0 5px 0 #1d7f72;
+  transition:.12s;
 }
-.btn:hover{ transform: translateY(-2px); }
-.btn:active{ transform: translateY(2px); box-shadow: 0 3px 0 #1d7f72; }
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.btn:active{
+  transform:translateY(2px);
+  box-shadow:0 2px 0 #1d7f72;
+}
+
 .btn.secondary{
-  background:transparent; color:var(--ink); border:1.5px solid var(--panel-line);
+  background:transparent;
+  color:var(--ink);
+  border:1.5px solid var(--panel-line);
   box-shadow:none;
 }
-.btn.secondary:hover{ border-color:var(--cyan); color:var(--cyan); transform:translateY(-2px); }
-.btn.success{ background:linear-gradient(135deg, var(--green), #24a86a); color:#06251a; box-shadow:0 6px 0 #1a7a4d, 0 8px 18px rgba(63,224,138,0.25); }
-.btn.danger{ background:linear-gradient(135deg, var(--red), #d43a56); color:#2a0510; box-shadow:0 6px 0 #9c1f36, 0 8px 18px rgba(255,84,112,0.25); }
-.btn:disabled{ opacity:0.3; cursor:not-allowed; transform:none; }
 
-input[type=text], input[type=number], select{
-  font-family:'Inter', sans-serif;
-  background:rgba(28,35,64,0.035);
+.btn.secondary:hover{
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+
+.btn.success{
+  background:linear-gradient(135deg,var(--green),#24a86a);
+  box-shadow:0 5px 0 #1a7a4d;
+}
+
+.btn.danger{
+  background:linear-gradient(135deg,var(--red),#d43a56);
+  box-shadow:0 5px 0 #9c1f36;
+}
+
+.btn.small{
+  font-size:13px;
+  padding:8px 12px;
+  box-shadow:none;
+}
+
+.btn:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+  transform:none;
+}
+
+input,
+select{
+  font-family:'Inter',sans-serif;
+  background:rgba(28,35,64,.035);
   border:1.5px solid var(--panel-line);
   border-radius:8px;
   color:var(--ink);
-  padding:10px 13px;
+  padding:10px 12px;
   font-size:14px;
   width:100%;
 }
-input::placeholder{ color:#5c6690; }
-input:focus, select:focus{ border-color:var(--cyan); }
-label{ font-size:11.5px; color:var(--ink-dim); display:block; margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; }
-select option{ background:#161c33; }
 
-.z1{ position:relative; z-index:1; }
+input:focus,
+select:focus{
+  border-color:var(--cyan);
+  outline:none;
+}
 
-/* ============ SETUP ============ */
-.setup-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
-.eyebrow{ font-size:12px; color:var(--cyan); font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:6px; }
-.setup-header h1{ font-size:26px; color:var(--ink); }
-.setup-header .sub{ font-size:13px; color:var(--ink-dim); margin-top:6px; }
+label{
+  font-size:11.5px;
+  color:var(--ink-dim);
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
 
-.setup-grid{ display:grid; grid-template-columns: 1fr 1.15fr; gap:26px; flex:1; margin-top:24px; position:relative; z-index:1; }
-@media (max-width: 780px){ .setup-grid{ grid-template-columns:1fr; } }
+.eyebrow{
+  font-size:12px;
+  color:var(--cyan);
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
 
-.panel-box{
-  background:rgba(28,35,64,0.025);
+.sub,
+.hint{
+  font-size:12.5px;
+  color:var(--ink-dim);
+  line-height:1.6;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  position:relative;
+  z-index:1;
+}
+
+.top-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.tabbar{
+  display:flex;
+  gap:8px;
+  margin:20px 0 18px;
+  position:relative;
+  z-index:1;
+  flex-wrap:wrap;
+}
+
+.tab{
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(28,35,64,.04);
+  border:1px solid var(--panel-line);
+  color:var(--ink-dim);
+  font-weight:700;
+}
+
+.tab.active{
+  background:var(--cyan-dim);
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1.15fr;
+  gap:22px;
+  position:relative;
+  z-index:1;
+  flex:1;
+}
+
+@media(max-width:820px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.panel{
+  background:rgba(28,35,64,.025);
   border:1px solid var(--panel-line);
   border-radius:12px;
-  padding:20px;
-  display:flex; flex-direction:column; gap:12px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
-.panel-box h2{ font-size:16px; color:var(--ink); display:flex; align-items:center; gap:8px; }
-.panel-box .tag{ font-size:10.5px; background:var(--cyan-dim); color:var(--cyan); padding:2px 8px; border-radius:20px; font-weight:700; letter-spacing:0.05em; }
 
-.wbuilder{ display:flex; flex-direction:column; gap:10px; }
-.row2{ display:flex; gap:10px; }
-.row2 > div{ flex:1; }
-
-.wlist{ display:flex; flex-direction:column; gap:8px; max-height:290px; overflow-y:auto; padding-right:4px; }
-.witem{
-  display:flex; justify-content:space-between; align-items:center; gap:10px;
-  background:rgba(28,35,64,0.025);
-  border:1px solid var(--panel-line); border-left:3px solid var(--cyan);
-  border-radius:8px; padding:10px 12px; font-size:13.5px;
+.panel h2{
+  font-size:16px;
 }
-.witem.hard{ border-left-color:var(--violet); }
-.witem.boss{ border-left-color:var(--amber); }
-.witem .lv-tag{ font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; margin-right:8px; letter-spacing:0.03em; }
-.witem.normal .lv-tag{ background:var(--cyan-dim); color:var(--cyan); }
-.witem.hard .lv-tag{ background:var(--violet-dim); color:var(--violet); }
-.witem.boss .lv-tag{ background:var(--amber-dim); color:var(--amber); }
-.witem .word{ font-family:'JetBrains Mono', monospace; color:var(--ink-dim); margin-left:8px; font-size:12px; }
-.witem button{ background:none; color:var(--ink-dim); font-size:16px; }
-.witem button:hover{ color:var(--red); }
-.empty-note{ padding:14px 2px; font-size:13px; color:var(--ink-dim); font-style:italic; }
 
-.setup-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:24px; gap:12px; flex-wrap:wrap; position:relative; z-index:1; }
-.hint{ font-size:12px; color:var(--ink-dim); line-height:1.6; }
+.row2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-.top-right-btns{ position:absolute; top:20px; right:22px; display:flex; gap:8px; z-index:2; }
-.icon-btn{ background:rgba(28,35,64,0.035); color:var(--ink-dim); border:1px solid var(--panel-line); border-radius:20px; padding:6px 14px; font-size:12px; font-family:'Inter'; font-weight:600; }
-.icon-btn:hover{ border-color:var(--cyan); color:var(--cyan); }
+@media(max-width:620px){
+  .row2{
+    grid-template-columns:1fr;
+  }
+}
 
-/* ============ PLAY / MAP ============ */
-.hud{ display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; position:relative; z-index:1; }
-.hearts{ display:flex; gap:5px; font-size:19px; }
-.heart{ filter: drop-shadow(0 0 6px rgba(255,84,112,0.5)); }
-.heart.lost{ opacity:0.18; filter:none; }
+.bank-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  max-height:350px;
+  overflow:auto;
+  padding-right:4px;
+}
 
-.hud-stat{ text-align:center; }
-.hud-stat .label{ font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-dim); font-weight:700; }
-.hud-stat .val{ font-size:20px; font-weight:700; color:var(--ink); }
-.hud-stat .val.combo{ color:var(--amber); }
+.word-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 11px;
+  border:1px solid var(--panel-line);
+  border-left:3px solid var(--cyan);
+  border-radius:8px;
+  background:rgba(28,35,64,.025);
+  font-size:13px;
+}
 
-.xp-wrap{ display:flex; align-items:center; gap:8px; }
-.xp-lv{ font-size:12px; font-weight:700; color:var(--cyan); background:var(--cyan-dim); padding:3px 9px; border-radius:20px; }
-.xp-track{ width:90px; height:6px; border-radius:4px; background:rgba(28,35,64,0.1); overflow:hidden; }
-.xp-fill{ height:100%; background:linear-gradient(90deg, var(--cyan), var(--violet)); transition:width 0.5s ease; }
+.word-row.hard{
+  border-left-color:var(--violet);
+}
 
-.map-row{ display:flex; align-items:center; gap:0; margin:20px 0 10px; overflow-x:auto; padding:6px 2px 14px; position:relative; z-index:1; }
+.word-row.boss{
+  border-left-color:var(--amber);
+}
+
+.word-en{
+  font-family:'JetBrains Mono';
+  font-size:11px;
+  color:var(--ink-dim);
+  margin-left:8px;
+}
+
+.tag{
+  font-size:10px;
+  font-weight:700;
+  border-radius:999px;
+  padding:2px 7px;
+  margin-right:6px;
+}
+
+.tag.normal{
+  background:var(--cyan-dim);
+  color:var(--cyan);
+}
+
+.tag.hard{
+  background:var(--violet-dim);
+  color:var(--violet);
+}
+
+.tag.boss{
+  background:var(--amber-dim);
+  color:var(--amber);
+}
+
+.mini-actions{
+  display:flex;
+  gap:5px;
+}
+
+.icon-btn{
+  background:none;
+  color:var(--ink-dim);
+  font-size:15px;
+  padding:2px 5px;
+}
+
+.icon-btn:hover{
+  color:var(--red);
+}
+
+.saved-set{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border:1px solid var(--panel-line);
+  border-radius:9px;
+  background:#fff;
+}
+
+.saved-set small{
+  color:var(--ink-dim);
+}
+
+.callout{
+  padding:12px 14px;
+  border:1px dashed var(--cyan);
+  background:var(--cyan-dim);
+  border-radius:10px;
+  font-size:12.5px;
+  line-height:1.55;
+}
+
+.setup-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:18px;
+  position:relative;
+  z-index:1;
+}
+
+.hud{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  position:relative;
+  z-index:1;
+}
+
+.hearts{
+  display:flex;
+  gap:5px;
+  font-size:19px;
+}
+
+.heart.lost{
+  opacity:.18;
+}
+
+.hud-stat{
+  text-align:center;
+}
+
+.hud-stat .label{
+  font-size:10px;
+  color:var(--ink-dim);
+  font-weight:700;
+  text-transform:uppercase;
+}
+
+.hud-stat .val{
+  font-size:20px;
+  font-weight:700;
+}
+
+.combo{
+  color:var(--amber);
+}
+
+.xp-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.xp-lv{
+  font-size:12px;
+  font-weight:700;
+  color:var(--cyan);
+  background:var(--cyan-dim);
+  padding:3px 9px;
+  border-radius:20px;
+}
+
+.xp-track{
+  width:100px;
+  height:6px;
+  background:rgba(28,35,64,.1);
+  border-radius:4px;
+  overflow:hidden;
+}
+
+.xp-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+}
+
+.map-row{
+  display:flex;
+  align-items:center;
+  gap:0;
+  margin:20px 0 10px;
+  overflow:auto;
+  padding:6px 2px 14px;
+  position:relative;
+  z-index:1;
+}
+
 .map-node{
-  width:30px; height:30px; border-radius:50%; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:12px; font-weight:700; font-family:'JetBrains Mono';
-  border:2px solid var(--panel-line); color:var(--ink-dim);
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  font-family:'JetBrains Mono';
+  border:2px solid var(--panel-line);
+  color:var(--ink-dim);
   background:var(--bg-2);
 }
-.map-node.boss{ width:36px; height:36px; border-radius:9px; transform:rotate(45deg); }
-.map-node.boss span{ transform:rotate(-45deg); display:block; }
-.map-node.current{ border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 0 4px var(--cyan-dim); animation:pulse 1.4s infinite; }
-.map-node.correct{ border-color:var(--green); background:var(--green-dim); color:var(--green); }
-.map-node.wrong{ border-color:var(--red); background:var(--red-dim); color:var(--red); }
-.map-line{ width:22px; height:2px; background:var(--panel-line); flex-shrink:0; }
-@keyframes pulse{ 0%,100%{box-shadow:0 0 0 4px var(--cyan-dim);} 50%{box-shadow:0 0 0 8px transparent;} }
 
-.card-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; z-index:1; }
-.challenge-tag{ font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:18px; }
-.challenge-tag.normal{ background:var(--cyan-dim); color:var(--cyan); }
-.challenge-tag.hard{ background:var(--violet-dim); color:var(--violet); }
-.challenge-tag.boss{ background:var(--amber-dim); color:var(--amber); animation:bossFlicker 1.6s infinite; }
-@keyframes bossFlicker{ 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+.map-node.boss{
+  width:36px;
+  height:36px;
+  border-radius:9px;
+  transform:rotate(45deg);
+}
 
-.prompt-text{ font-family:'Rajdhani', sans-serif; font-size:clamp(30px,4.6vw,50px); font-weight:700; text-align:center; margin-bottom:6px; }
-.hint-text{ font-size:13px; color:var(--ink-dim); margin-bottom:22px; }
+.map-node.boss span{
+  transform:rotate(-45deg);
+}
 
-.tiles-wrap{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:30px; }
+.map-node.current{
+  border-color:var(--cyan);
+  color:var(--cyan);
+  box-shadow:0 0 0 4px var(--cyan-dim);
+}
+
+.map-node.correct{
+  border-color:var(--green);
+  background:var(--green-dim);
+  color:var(--green);
+}
+
+.map-node.wrong{
+  border-color:var(--red);
+  background:var(--red-dim);
+  color:var(--red);
+}
+
+.map-line{
+  width:20px;
+  height:2px;
+  background:var(--panel-line);
+  flex-shrink:0;
+}
+
+.card-wrap{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:1;
+}
+
+.challenge-tag{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  padding:5px 14px;
+  border-radius:20px;
+  margin-bottom:18px;
+}
+
+.challenge-tag.normal{
+  background:var(--cyan-dim);
+  color:var(--cyan);
+}
+
+.challenge-tag.hard{
+  background:var(--violet-dim);
+  color:var(--violet);
+}
+
+.challenge-tag.boss{
+  background:var(--amber-dim);
+  color:var(--amber);
+}
+
+.prompt-text{
+  font-family:'Rajdhani';
+  font-size:clamp(30px,4.6vw,50px);
+  font-weight:700;
+  text-align:center;
+  margin-bottom:6px;
+}
+
+.tiles-wrap{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:18px 0 28px;
+}
+
 .tile{
-  width:48px; height:58px; border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'JetBrains Mono', monospace; font-size:22px; font-weight:700;
-  border:2px solid var(--panel-line); background:rgba(28,35,64,0.025);
-  color:transparent; position:relative; transform-style:preserve-3d;
-  transition: transform 0.5s ease, border-color 0.4s, background 0.4s, color 0.2s;
+  width:48px;
+  height:58px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'JetBrains Mono';
+  font-size:22px;
+  font-weight:700;
+  border:2px solid var(--panel-line);
+  background:rgba(28,35,64,.025);
+  color:transparent;
+  position:relative;
 }
-.tile.revealed{ color:var(--green); border-color:var(--green); background:var(--green-dim); transform:rotateY(0deg) scale(1.03); box-shadow:0 0 16px rgba(63,224,138,0.35); }
-.tile-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--ink-dim); opacity:0.5; }
 
-.timer-box{ display:flex; align-items:center; gap:10px; }
-.timer-ring{ position:relative; width:58px; height:58px; }
-.timer-ring svg{ position:absolute; inset:0; transform:rotate(-90deg); }
-.timer-ring circle{ fill:none; stroke-width:5; }
-.timer-num{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Orbitron'; font-weight:700; font-size:17px; }
-.timer-ring.danger{ animation:dangerPulse 0.6s infinite; }
-@keyframes dangerPulse{ 0%,100%{ filter:drop-shadow(0 0 0 transparent);} 50%{ filter:drop-shadow(0 0 8px rgba(255,84,112,0.6));} }
-
-.play-controls{ display:flex; justify-content:center; gap:14px; margin-bottom:6px; position:relative; z-index:1; flex-wrap:wrap; }
-
-/* ---- feedback overlays ---- */
-.flash{ position:absolute; inset:0; pointer-events:none; opacity:0; z-index:5; border-radius:16px; }
-.flash.on-good{ animation:flashGood 0.6s ease; }
-.flash.on-bad{ animation:flashBad 0.6s ease; }
-@keyframes flashGood{ 0%{ opacity:0.55; background:radial-gradient(circle, rgba(63,224,138,0.5), transparent 70%);} 100%{opacity:0;} }
-@keyframes flashBad{ 0%{ opacity:0.55; background:radial-gradient(circle, rgba(255,84,112,0.5), transparent 70%);} 100%{opacity:0;} }
-
-@keyframes shakeAnim{ 10%,90%{transform:translateX(-1px);} 20%,80%{transform:translateX(2px);} 30%,50%,70%{transform:translateX(-4px);} 40%,60%{transform:translateX(4px);} }
-.shake{ animation:shakeAnim 0.45s; }
-
-.float-pop{
-  position:absolute; left:50%; top:44%; transform:translate(-50%,-50%);
-  font-family:'Orbitron', sans-serif; font-weight:700; font-size:26px;
-  color:var(--amber); text-shadow:0 0 18px rgba(255,176,32,0.7);
-  pointer-events:none; z-index:6;
-  animation: popFloat 1.1s ease forwards;
+.tile.revealed{
+  color:var(--green);
+  border-color:var(--green);
+  background:var(--green-dim);
 }
-@keyframes popFloat{ 0%{ opacity:0; transform:translate(-50%,-40%) scale(0.7);} 20%{opacity:1; transform:translate(-50%,-60%) scale(1.1);} 100%{opacity:0; transform:translate(-50%,-110%) scale(1);} }
 
-.level-toast{
-  position:absolute; top:16px; left:50%; transform:translateX(-50%);
-  background:linear-gradient(135deg, var(--violet), var(--cyan));
-  color:#0a0e1c; font-family:'Orbitron'; font-weight:800; font-size:14px;
-  padding:9px 22px; border-radius:30px; letter-spacing:0.05em;
-  box-shadow:0 10px 26px rgba(160,107,255,0.4); z-index:7;
-  animation: toastDrop 2s ease forwards;
+.tile-icon{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  color:var(--ink-dim);
+  opacity:.5;
 }
-@keyframes toastDrop{ 0%{opacity:0; transform:translate(-50%,-20px);} 12%{opacity:1; transform:translate(-50%,0);} 85%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-10px);} }
 
-/* ============ END ============ */
-.end-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; position:relative; z-index:1; padding:10px 0; }
-.chest{ font-size:64px; animation:chestPop 0.7s ease; filter:drop-shadow(0 0 24px rgba(255,176,32,0.4)); }
-@keyframes chestPop{ 0%{ transform:scale(0.4) rotate(-8deg); opacity:0;} 60%{ transform:scale(1.15) rotate(4deg); opacity:1;} 100%{ transform:scale(1) rotate(0);} }
-.rank-badge{ font-family:'Orbitron'; font-size:44px; font-weight:800; letter-spacing:0.03em; }
-.rank-badge.S{ color:var(--amber); text-shadow:0 0 30px rgba(255,176,32,0.5); }
-.rank-badge.A{ color:var(--cyan); text-shadow:0 0 24px rgba(77,227,209,0.4); }
-.rank-badge.B{ color:var(--violet); }
-.rank-badge.C{ color:var(--ink-dim); }
-.rank-title{ font-size:15px; color:var(--ink-dim); text-align:center; }
-.stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; width:100%; max-width:420px; margin-top:6px; }
-.stat-card{ background:rgba(28,35,64,0.03); border:1px solid var(--panel-line); border-radius:10px; padding:12px; text-align:center; }
-.stat-card .label{ font-size:10px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.08em; font-weight:700; margin-bottom:4px; }
-.stat-card .val{ font-family:'Orbitron'; font-size:20px; font-weight:700; color:var(--ink); }
-.review-list{ width:100%; max-width:480px; display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto; margin-top:6px; }
-.review-row{ display:flex; justify-content:space-between; padding:8px 12px; border-radius:8px; background:rgba(28,35,64,0.025); font-size:13px; border-left:3px solid var(--panel-line); }
-.review-row.hit{ border-left-color:var(--green); }
-.review-row.miss{ border-left-color:var(--red); }
-.review-row .word{ font-family:'JetBrains Mono'; color:var(--ink-dim); font-size:11.5px; }
+.timer{
+  font-family:'Orbitron';
+  font-size:24px;
+  font-weight:700;
+  color:var(--cyan);
+}
+
+.timer.danger{
+  color:var(--red);
+}
+
+.play-controls{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  position:relative;
+  z-index:1;
+}
+
+.end-wrap{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  position:relative;
+  z-index:1;
+}
+
+.rank{
+  font-family:'Orbitron';
+  font-size:42px;
+  font-weight:800;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  width:100%;
+  max-width:460px;
+}
+
+.stat{
+  background:rgba(28,35,64,.03);
+  border:1px solid var(--panel-line);
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+
+.stat .label{
+  font-size:10px;
+  color:var(--ink-dim);
+  text-transform:uppercase;
+}
+
+.stat .val{
+  font-family:'Orbitron';
+  font-size:20px;
+  font-weight:700;
+}
+
+.review{
+  width:100%;
+  max-width:520px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  max-height:220px;
+  overflow:auto;
+}
+
+.review-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 12px;
+  border-radius:8px;
+  background:rgba(28,35,64,.025);
+  font-size:13px;
+  border-left:3px solid var(--panel-line);
+}
+
+.review-row.hit{
+  border-left-color:var(--green);
+}
+
+.review-row.miss{
+  border-left-color:var(--red);
+}
+
+.projection-note{
+  font-size:11px;
+  color:var(--ink-dim);
+}
+
+.teacher-badge{
+  font-size:11px;
+  background:var(--violet-dim);
+  color:var(--violet);
+  padding:5px 10px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.empty{
+  padding:18px 4px;
+  color:var(--ink-dim);
+  font-size:13px;
+  font-style:italic;
+}
 </style>
 </head>
+
 <body>
-<div id="stage"><div id="board"></div></div>
+
+<div id="stage">
+  <div id="board"></div>
+</div>
 
 <script>
-let audioCtx = null;
-function ensureAudio(){ if(!audioCtx){ try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume(); } }
-function tone(freqA, freqB, dur, vol){
-  if(state.muted || !audioCtx) return;
-  const t0 = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type='sine';
-  osc.frequency.setValueAtTime(freqA, t0);
-  osc.frequency.linearRampToValueAtTime(freqB, t0+dur);
-  gain.gain.setValueAtTime(vol||0.12, t0);
-  gain.gain.linearRampToValueAtTime(0, t0+dur);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(t0); osc.stop(t0+dur);
-}
-function sfxCorrect(){ tone(520,880,0.22,0.14); }
-function sfxWrong(){ tone(280,120,0.28,0.14); }
-function sfxLevelUp(){ tone(440,660,0.12,0.13); setTimeout(()=>tone(660,990,0.16,0.13),110); }
 
-let state = {
-  screen: 'setup',
-  title: '詞彙異境：迷霧試煉',
-  timePerWord: 25,
-  words: [],
-  current: 0,
-  timeLeft: 0,
-  timerId: null,
-  revealed: false,
-  hearts: 3,
-  combo: 0,
-  maxCombo: 0,
-  xp: 0,
-  results: [],
-  muted: false,
+const STORAGE_KEY='violet_vocab_sets_v2';
+const CHANNEL='violet_vocab_projection_v2';
+
+let bc=null;
+
+try{
+  bc=new BroadcastChannel(CHANNEL);
+}catch(e){}
+
+let state={
+  screen:'setup',
+  tab:'bank',
+
+  title:'Vocabulary Quest：迷霧試煉',
+
+  timePerWord:25,
+
+  words:[],
+
+  selectedCount:12,
+
+  shuffle:true,
+
+  sessionWords:[],
+
+  current:0,
+
+  timeLeft:0,
+
+  timerId:null,
+
+  revealed:false,
+
+  hearts:3,
+
+  combo:0,
+
+  maxCombo:0,
+
+  xp:0,
+
+  results:[],
+
+  savedSets:loadSets(),
+
+  isProjection:false
 };
 
-function levelFromXp(xp){ return Math.floor(xp/100)+1; }
+function loadSets(){
+
+  try{
+    return JSON.parse(
+      localStorage.getItem(STORAGE_KEY)||'[]'
+    );
+  }
+  catch(e){
+    return [];
+  }
+
+}
+
+function saveSets(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(state.savedSets)
+  );
+
+}
+
+function levelFromXp(xp){
+
+  return Math.floor(xp/100)+1;
+
+}
+
+function escapeHtml(v){
+
+  return String(v).replace(
+    /[&<>"']/g,
+    m=>({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#039;'
+    }[m])
+  );
+
+}
+
+function shuffled(arr){
+
+  const a=[...arr];
+
+  for(let i=a.length-1;i>0;i--){
+
+    const j=Math.floor(
+      Math.random()*(i+1)
+    );
+
+    [a[i],a[j]]=[a[j],a[i]];
+
+  }
+
+  return a;
+
+}
 
 function loadSample(){
-  state.title = '詞彙異境：迷霧試煉';
-  state.words = [
-    {hint:'蘋果', word:'apple', level:'normal'},
-    {hint:'圖書館', word:'library', level:'normal'},
-    {hint:'環境', word:'environment', level:'hard'},
-    {hint:'旅行', word:'travel', level:'normal'},
-    {hint:'機會', word:'opportunity', level:'hard'},
-    {hint:'不可思議的', word:'incredible', level:'boss'},
+
+  state.title='Unit 4 Vocabulary';
+
+  state.words=[
+
+    {
+      hint:'蘋果',
+      word:'apple',
+      level:'normal'
+    },
+
+    {
+      hint:'圖書館',
+      word:'library',
+      level:'normal'
+    },
+
+    {
+      hint:'環境',
+      word:'environment',
+      level:'hard'
+    },
+
+    {
+      hint:'旅行',
+      word:'travel',
+      level:'normal'
+    },
+
+    {
+      hint:'機會',
+      word:'opportunity',
+      level:'hard'
+    },
+
+    {
+      hint:'不可思議的',
+      word:'incredible',
+      level:'boss'
+    },
+
+    {
+      hint:'文化',
+      word:'culture',
+      level:'normal'
+    },
+
+    {
+      hint:'選擇',
+      word:'choice',
+      level:'normal'
+    },
+
+    {
+      hint:'經驗',
+      word:'experience',
+      level:'hard'
+    },
+
+    {
+      hint:'成功',
+      word:'success',
+      level:'normal'
+    },
+
+    {
+      hint:'挑戰',
+      word:'challenge',
+      level:'hard'
+    },
+
+    {
+      hint:'負責任的',
+      word:'responsible',
+      level:'boss'
+    },
+
+    {
+      hint:'改善',
+      word:'improve',
+      level:'normal'
+    },
+
+    {
+      hint:'決定',
+      word:'decision',
+      level:'hard'
+    },
+
+    {
+      hint:'溝通',
+      word:'communication',
+      level:'boss'
+    }
+
   ];
+
+  state.selectedCount=Math.min(
+    12,
+    state.words.length
+  );
+
   render();
+
 }
 
 function addWord(){
-  const hintInput = document.getElementById('hintInput');
-  const wordInput = document.getElementById('wordInput');
-  const levelSel = document.getElementById('levelSelect');
-  const hint = hintInput.value.trim();
-  const word = wordInput.value.trim().toLowerCase();
-  if(!hint || !word){ alert('請輸入中文提示與英文單字'); return; }
-  state.words.push({hint, word, level:levelSel.value});
-  hintInput.value=''; wordInput.value='';
-  hintInput.focus();
+
+  const hint=
+    document
+    .getElementById('hintInput')
+    .value
+    .trim();
+
+  const word=
+    document
+    .getElementById('wordInput')
+    .value
+    .trim()
+    .toLowerCase();
+
+  const level=
+    document
+    .getElementById('levelSelect')
+    .value;
+
+  if(!hint||!word){
+
+    alert('請輸入中文提示與英文單字');
+
+    return;
+
+  }
+
+  state.words.push({
+    hint,
+    word,
+    level
+  });
+
+  state.selectedCount=
+    Math.min(
+      Math.max(
+        state.selectedCount,
+        1
+      ),
+      state.words.length
+    );
+
   render();
+
 }
-function removeWord(idx){ state.words.splice(idx,1); render(); }
+
+function removeWord(i){
+
+  state.words.splice(i,1);
+
+  state.selectedCount=
+    Math.min(
+      state.selectedCount,
+      state.words.length||1
+    );
+
+  render();
+
+}
+
+function clearWords(){
+
+  if(
+    confirm('確定清空目前題庫？')
+  ){
+
+    state.words=[];
+
+    render();
+
+  }
+
+}
+
+function saveCurrentSet(){
+
+  if(!state.words.length){
+
+    alert('題庫目前是空的');
+
+    return;
+
+  }
+
+  const name=
+    (state.title||'未命名題庫')
+    .trim();
+
+  const existing=
+    state.savedSets.findIndex(
+      s=>s.name===name
+    );
+
+  const payload={
+
+    id:
+      existing>=0
+      ?state.savedSets[existing].id
+      :Date.now(),
+
+    name,
+
+    words:state.words,
+
+    timePerWord:state.timePerWord,
+
+    updatedAt:new Date().toISOString()
+
+  };
+
+  if(existing>=0){
+
+    state.savedSets[existing]=payload;
+
+  }
+  else{
+
+    state.savedSets.unshift(payload);
+
+  }
+
+  saveSets();
+
+  render();
+
+  alert('已儲存題庫：'+name);
+
+}
+
+function loadSet(id){
+
+  const s=
+    state.savedSets.find(
+      x=>x.id===id
+    );
+
+  if(!s)return;
+
+  state.title=s.name;
+
+  state.words=
+    JSON.parse(
+      JSON.stringify(s.words)
+    );
+
+  state.timePerWord=
+    s.timePerWord||25;
+
+  state.selectedCount=
+    Math.min(
+      12,
+      state.words.length
+    );
+
+  state.tab='bank';
+
+  render();
+
+}
+
+function deleteSet(id){
+
+  if(
+    !confirm('確定刪除此題庫？')
+  )return;
+
+  state.savedSets=
+    state.savedSets.filter(
+      x=>x.id!==id
+    );
+
+  saveSets();
+
+  render();
+
+}
 
 function startGame(){
-  ensureAudio();
-  if(state.words.length===0){ alert('請先新增至少一個單字，或點右上「載入範例任務」'); return; }
-  state.screen='play';
+
+  if(!state.words.length){
+
+    alert('請先建立或載入題庫');
+
+    return;
+
+  }
+
+  const count=
+    Math.max(
+      1,
+      Math.min(
+        parseInt(state.selectedCount)
+        ||state.words.length,
+        state.words.length
+      )
+    );
+
+  state.sessionWords=
+    (
+      state.shuffle
+      ?shuffled(state.words)
+      :[...state.words]
+    ).slice(0,count);
+
   state.current=0;
+
   state.hearts=3;
+
   state.combo=0;
+
   state.maxCombo=0;
+
   state.xp=0;
+
   state.results=[];
+
+  state.screen='play';
+
   beginWord();
+
 }
 
 function beginWord(){
-  const w = state.words[state.current];
-  state.timeLeft = state.timePerWord;
-  state.revealed = false;
-  clearInterval(state.timerId);
-  state.timerId = setInterval(()=>{
-    state.timeLeft--;
-    if(state.timeLeft<=0){ revealAnswer(); }
-    else render();
-  }, 1000);
+
+  clearInterval(
+    state.timerId
+  );
+
+  state.timeLeft=
+    state.timePerWord;
+
+  state.revealed=false;
+
+  state.timerId=
+    setInterval(()=>{
+
+      state.timeLeft--;
+
+      if(
+        state.timeLeft<=0
+      ){
+
+        revealAnswer();
+
+      }
+      else{
+
+        render();
+
+        broadcast();
+
+      }
+
+    },1000);
+
   render();
+
+  broadcast();
+
 }
 
 function revealAnswer(){
-  clearInterval(state.timerId);
-  state.revealed = true;
+
+  clearInterval(
+    state.timerId
+  );
+
+  state.revealed=true;
+
   render();
+
+  broadcast();
+
 }
 
 function markResult(correct){
-  ensureAudio();
-  const w = state.words[state.current];
-  const prevLevel = levelFromXp(state.xp);
-  let gained = 0;
+
+  const w=
+    state.sessionWords[
+      state.current
+    ];
+
+  let gained=0;
+
   if(correct){
+
     state.combo++;
-    state.maxCombo = Math.max(state.maxCombo, state.combo);
-    const mult = 1 + Math.floor(state.combo/3)*0.5;
-    const base = w.level==='boss' ? 40 : (w.level==='hard' ? 20 : 10);
-    gained = Math.round(base*mult);
-    state.xp += gained;
-    sfxCorrect();
-  } else {
-    state.combo = 0;
-    state.hearts = Math.max(0, state.hearts-1);
-    sfxWrong();
-  }
-  state.results.push({hint:w.hint, word:w.word, correct, level:w.level, gained});
 
-  const board = document.getElementById('board');
-  const flash = document.createElement('div');
-  flash.className = 'flash ' + (correct?'on-good':'on-bad');
-  board.appendChild(flash);
-  setTimeout(()=>flash.remove(), 650);
-  if(!correct){ board.classList.add('shake'); setTimeout(()=>board.classList.remove('shake'),460); }
-  if(correct && gained>0){
-    const pop = document.createElement('div');
-    pop.className='float-pop';
-    pop.textContent = (state.combo>=3?('COMBO x'+(1+Math.floor(state.combo/3)*0.5)+'  '):'') + '+'+gained+' XP';
-    board.appendChild(pop);
-    setTimeout(()=>pop.remove(), 1150);
+    state.maxCombo=
+      Math.max(
+        state.maxCombo,
+        state.combo
+      );
+
+    const mult=
+      1+
+      Math.floor(
+        state.combo/3
+      )*.5;
+
+    const base=
+      w.level==='boss'
+      ?40
+      :(
+        w.level==='hard'
+        ?20
+        :10
+      );
+
+    gained=
+      Math.round(
+        base*mult
+      );
+
+    state.xp+=gained;
+
   }
-  const newLevel = levelFromXp(state.xp);
-  if(newLevel>prevLevel){
-    sfxLevelUp();
-    const toast = document.createElement('div');
-    toast.className='level-toast';
-    toast.textContent = '⚡ 升級！LV.'+newLevel;
-    board.appendChild(toast);
-    setTimeout(()=>toast.remove(), 2000);
+  else{
+
+    state.combo=0;
+
+    state.hearts=
+      Math.max(
+        0,
+        state.hearts-1
+      );
+
   }
 
-  setTimeout(nextWord, correct?550:650);
+  state.results.push({
+
+    hint:w.hint,
+
+    word:w.word,
+
+    correct,
+
+    level:w.level,
+
+    gained
+
+  });
+
+  setTimeout(
+    nextWord,
+    300
+  );
+
 }
 
 function nextWord(){
-  if(state.current >= state.words.length-1){
+
+  if(
+    state.current>=
+    state.sessionWords.length-1
+  ){
+
+    clearInterval(
+      state.timerId
+    );
+
     state.screen='end';
-    clearInterval(state.timerId);
+
     render();
-  } else {
-    state.current++;
-    beginWord();
+
+    broadcast();
+
   }
+  else{
+
+    state.current++;
+
+    beginWord();
+
+  }
+
+}
+
+function retryWrong(){
+
+  const wrong=
+    state.results
+    .filter(
+      r=>!r.correct
+    )
+    .map(
+      r=>({
+        hint:r.hint,
+        word:r.word,
+        level:r.level
+      })
+    );
+
+  if(!wrong.length){
+
+    alert('這次沒有錯題！');
+
+    return;
+
+  }
+
+  state.sessionWords=wrong;
+
+  state.current=0;
+
+  state.hearts=3;
+
+  state.combo=0;
+
+  state.maxCombo=0;
+
+  state.xp=0;
+
+  state.results=[];
+
+  state.screen='play';
+
+  beginWord();
+
 }
 
 function backToSetup(){
-  clearInterval(state.timerId);
+
+  clearInterval(
+    state.timerId
+  );
+
   state.screen='setup';
+
   render();
+
+  broadcast();
+
 }
 
-function playAgain(){ state.screen='setup'; render(); }
-function toggleMute(){ state.muted=!state.muted; render(); }
+function broadcast(){
 
-/* ---------------- RENDER ---------------- */
+  if(!bc)return;
+
+  bc.postMessage({
+
+    screen:state.screen,
+
+    title:state.title,
+
+    timePerWord:
+      state.timePerWord,
+
+    sessionWords:
+      state.sessionWords,
+
+    current:
+      state.current,
+
+    timeLeft:
+      state.timeLeft,
+
+    revealed:
+      state.revealed,
+
+    hearts:
+      state.hearts,
+
+    combo:
+      state.combo,
+
+    maxCombo:
+      state.maxCombo,
+
+    xp:
+      state.xp,
+
+    results:
+      state.results
+
+  });
+
+}
+
+function openProjection(){
+
+  const w=
+    window.open(
+      location.href+'#projection',
+      'VioletProjection',
+      'width=1200,height=800'
+    );
+
+  if(!w){
+
+    alert(
+      '瀏覽器阻擋了投影視窗，請允許彈出視窗。'
+    );
+
+  }
+
+  setTimeout(
+    broadcast,
+    700
+  );
+
+}
+
+if(
+  location.hash==='#projection'
+){
+
+  state.isProjection=true;
+
+  if(bc){
+
+    bc.onmessage=e=>{
+
+      Object.assign(
+        state,
+        e.data
+      );
+
+      render();
+
+    };
+
+  }
+
+  document.title=
+    '詞彙異境 · 投影模式';
+
+}
+
 function render(){
-  const board = document.getElementById('board');
-  if(state.screen==='setup') board.innerHTML = renderSetup();
-  else if(state.screen==='play') board.innerHTML = renderPlay();
-  else board.innerHTML = renderEnd();
+
+  const board=
+    document
+    .getElementById('board');
+
+  if(
+    state.isProjection
+  ){
+
+    board.innerHTML=
+      state.screen==='play'
+      ?renderPlay(true)
+      :state.screen==='end'
+      ?renderEnd(true)
+      :renderProjectionWaiting();
+
+    return;
+
+  }
+
+  board.innerHTML=
+    state.screen==='setup'
+    ?renderSetup()
+    :state.screen==='play'
+    ?renderPlay(false)
+    :renderEnd(false);
+
 }
 
-function renderSetup(){
-  const wordListHTML = state.words.map((w,idx)=>{
-    const lvLabel = w.level==='boss'?'首領':(w.level==='hard'?'困難':'普通');
-    return `<div class="witem ${w.level}">
-      <span><span class="lv-tag">${lvLabel}</span>${w.hint} <span class="word">${w.word}</span></span>
-      <button onclick="removeWord(${idx})">✕</button>
-    </div>`;
-  }).join('') || '<div class="empty-note">尚未新增單字，或點右上「載入範例任務」快速試玩</div>';
-
-  return `
-    <div class="top-right-btns">
-      <button class="icon-btn" onclick="loadSample()">載入範例任務</button>
-    </div>
-    <div class="setup-header">
-      <div>
-        <div class="eyebrow">Mission Setup</div>
-        <h1>${state.title}</h1>
-        <div class="sub">設計你的單字關卡，帶全班一起闖關解謎</div>
-      </div>
-    </div>
-    <div class="setup-grid">
-      <div class="panel-box">
-        <h2>🗝 建立挑戰卡</h2>
-        <div>
-          <label>任務名稱</label>
-          <input type="text" value="${state.title}" oninput="state.title=this.value">
-        </div>
-        <div class="wbuilder">
-          <div>
-            <label>中文提示</label>
-            <input type="text" id="hintInput" placeholder="例如：不可思議的" onkeydown="if(event.key==='Enter')document.getElementById('wordInput').focus()">
-          </div>
-          <div class="row2">
-            <div>
-              <label>英文單字</label>
-              <input type="text" id="wordInput" placeholder="例如：incredible" onkeydown="if(event.key==='Enter')addWord()">
-            </div>
-            <div style="max-width:120px;">
-              <label>難度</label>
-              <select id="levelSelect">
-                <option value="normal">普通</option>
-                <option value="hard">困難</option>
-                <option value="boss">首領</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn secondary" onclick="addWord()">＋ 加入挑戰卡</button>
-        </div>
-        <div>
-          <label>每題倒數時間（秒）</label>
-          <input type="number" value="${state.timePerWord}" min="5" max="180" oninput="state.timePerWord=parseInt(this.value)||25">
-        </div>
-        <div class="hint">全班一起看螢幕提示搶答，答對累積連擊與經驗值，答錯會失去一顆愛心。「首領」單字答對可獲得大量經驗值！</div>
-      </div>
-      <div class="panel-box">
-        <h2>📜 挑戰卡列表 <span class="tag">${state.words.length} 題</span></h2>
-        <div class="wlist">${wordListHTML}</div>
-      </div>
-    </div>
-    <div class="setup-footer">
-      <span class="hint">建議搭配投影機／電子白板，全班一起挑戰</span>
-      <button class="btn" style="font-size:16px; padding:14px 32px;" onclick="startGame()">⚔ 開始闖關</button>
-    </div>
-  `;
-}
-
-function renderPlay(){
-  const w = state.words[state.current];
-  const total = state.words.length;
-  const pct = state.timePerWord>0 ? Math.max(state.timeLeft/state.timePerWord,0) : 0;
-  const circumference = 2*Math.PI*24;
-  const dash = circumference*pct;
-  const danger = state.timeLeft<=5;
-  const ringColor = danger ? 'var(--red)' : 'var(--cyan)';
-  const level = levelFromXp(state.xp);
-  const xpInLevel = state.xp % 100;
-
-  const heartsHTML = [0,1,2].map(i=>`<span class="heart ${i>=state.hearts?'lost':''}">❤️</span>`).join('');
-
-  const mapHTML = state.words.map((word,idx)=>{
-    let cls='map-node'+(word.level==='boss'?' boss':'');
-    let content = idx+1;
-    if(idx<state.current){
-      const res = state.results[idx];
-      cls += res && res.correct ? ' correct' : ' wrong';
-      content = res && res.correct ? '✓' : '✕';
-    } else if(idx===state.current){ cls += ' current'; }
-    const inner = word.level==='boss' ? `<span>${content}</span>` : content;
-    return `<div class="${cls}">${inner}</div>` + (idx<total-1?'<div class="map-line"></div>':'');
-  }).join('');
-
-  const tilesHTML = w.word.split('').map(ch=>{
-    if(ch===' ') return `<div style="width:16px"></div>`;
-    return `<div class="tile ${state.revealed?'revealed':''}">${state.revealed?ch.toUpperCase():'<span class="tile-icon">🔒</span>'}</div>`;
-  }).join('');
-
-  const tagLabel = w.level==='boss'?'⚠ 首領降臨':(w.level==='hard'?'強化挑戰':'一般挑戰');
-
-  return `
-    <div class="top-right-btns">
-      <button class="icon-btn" onclick="toggleMute()">${state.muted?'🔇 靜音中':'🔊 音效開'}</button>
-      <button class="icon-btn" onclick="backToSetup()">返回準備室</button>
-    </div>
-    <div class="hud">
-      <div class="hearts">${heartsHTML}</div>
-      <div class="hud-stat"><div class="label">關卡</div><div class="val numeric">${state.current+1} / ${total}</div></div>
-      <div class="hud-stat"><div class="label">連擊</div><div class="val combo numeric">${state.combo>0?'x'+state.combo:'-'}</div></div>
-      <div class="xp-wrap">
-        <span class="xp-lv">LV.${level}</span>
-        <div class="xp-track"><div class="xp-fill" style="width:${xpInLevel}%"></div></div>
-      </div>
-      <div class="timer-box">
-        <div class="timer-ring ${danger?'danger':''}">
-          <svg width="58" height="58">
-            <circle cx="29" cy="29" r="24" stroke="rgba(28,35,64,0.12)"></circle>
-            <circle cx="29" cy="29" r="24" stroke="${ringColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference-dash}" stroke-linecap="round"></circle>
-          </svg>
-          <div class="timer-num numeric" style="color:${ringColor}">${state.timeLeft}</div>
-        </div>
-      </div>
-    </div>
-    <div class="map-row">${mapHTML}</div>
-    <div class="card-wrap">
-      <div class="challenge-tag ${w.level}">${tagLabel}</div>
-      <div class="prompt-text">${w.hint}</div>
-      <div class="hint-text">共 ${w.word.replace(/ /g,'').length} 個字母 · 解開封印字母</div>
-      <div class="tiles-wrap">${tilesHTML}</div>
-    </div>
-    <div class="play-controls">
-      ${!state.revealed
-        ? `<button class="btn" onclick="revealAnswer()">🗝 解開封印</button>`
-        : `<button class="btn success" onclick="markResult(true)">✓ 過關成功</button>
-           <button class="btn danger" onclick="markResult(false)">✕ 挑戰失敗</button>`
-      }
-    </div>
-  `;
-}
-
-function renderEnd(){
-  const total = state.results.length;
-  const correctCount = state.results.filter(r=>r.correct).length;
-  const accuracy = total>0 ? correctCount/total : 0;
-  const comboScore = total>0 ? Math.min(state.maxCombo/total,1) : 0;
-  const composite = accuracy*70 + comboScore*30;
-  let rank='C', title='初心挑戰者';
-  if(composite>=90){ rank='S'; title='傳說拼字大師'; }
-  else if(composite>=75){ rank='A'; title='詞彙獵人'; }
-  else if(composite>=55){ rank='B'; title='見習冒險者'; }
-
-  const reviewHTML = state.results.map(r=>`
-    <div class="review-row ${r.correct?'hit':'miss'}">
-      <span>${r.hint} <span class="word">${r.word}</span></span>
-      <span>${r.correct?('✓ +'+r.gained+' XP'):'✕'}</span>
-    </div>`).join('');
+function renderProjectionWaiting(){
 
   return `
     <div class="end-wrap">
-      <div class="chest">🎁</div>
-      <div>
-        <div class="rank-badge ${rank}">RANK ${rank}</div>
-        <div class="rank-title">${title}</div>
+
+      <div class="eyebrow">
+        Student Projection
       </div>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="label">正確率</div><div class="val numeric">${Math.round(accuracy*100)}%</div></div>
-        <div class="stat-card"><div class="label">最高連擊</div><div class="val numeric">x${state.maxCombo}</div></div>
-        <div class="stat-card"><div class="label">總經驗值</div><div class="val numeric">${state.xp}</div></div>
+
+      <h1>
+        詞彙異境
+      </h1>
+
+      <div class="sub">
+        等待老師開始任務…
       </div>
-      <div class="review-list">${reviewHTML}</div>
-      <button class="btn secondary" onclick="playAgain()">返回準備室，開啟新任務</button>
+
     </div>
   `;
+
+}
+
+function renderSetup(){
+
+  const wordRows=
+    state.words
+    .map(
+      (w,i)=>`
+
+      <div class="word-row ${w.level}">
+
+        <div>
+
+          <span class="tag ${w.level}">
+
+            ${
+              w.level==='boss'
+              ?'首領'
+              :w.level==='hard'
+              ?'困難'
+              :'普通'
+            }
+
+          </span>
+
+          ${escapeHtml(w.hint)}
+
+          <span class="word-en">
+
+            ${escapeHtml(w.word)}
+
+          </span>
+
+        </div>
+
+        <div class="mini-actions">
+
+          <button
+            class="icon-btn"
+            onclick="removeWord(${i})"
+          >
+            ✕
+          </button>
+
+        </div>
+
+      </div>
+
+    `
+    )
+    .join('')
+    ||
+    `
+    <div class="empty">
+
+      尚未建立題目。
+      可以先載入 15 題範例，
+      再修改成你的教材。
+
+    </div>
+    `;
+
+  const sets=
+    state.savedSets
+    .map(
+      s=>`
+
+      <div class="saved-set">
+
+        <div>
+
+          <strong>
+            ${escapeHtml(s.name)}
+          </strong>
+
+          <br>
+
+          <small>
+            ${s.words.length} 題
+          </small>
+
+        </div>
+
+        <div class="mini-actions">
+
+          <button
+            class="btn small secondary"
+            onclick="loadSet(${s.id})"
+          >
+            載入
+          </button>
+
+          <button
+            class="icon-btn"
+            onclick="deleteSet(${s.id})"
+          >
+            ✕
+          </button>
+
+        </div>
+
+      </div>
+
+    `
+    )
+    .join('')
+    ||
+    `
+    <div class="empty">
+
+      還沒有已儲存題庫。
+
+    </div>
+    `;
+
+  return `
+
+  <div class="topbar">
+
+    <div>
+
+      <div class="eyebrow">
+        Teacher Console
+      </div>
+
+      <h1>
+        ${escapeHtml(state.title)}
+      </h1>
+
+      <div class="sub">
+        老師端管理題庫；
+        學生投影端不會看到答案。
+      </div>
+
+    </div>
+
+    <div class="top-actions">
+
+      <span class="teacher-badge">
+        教師模式
+      </span>
+
+      <button
+        class="btn small secondary"
+        onclick="loadSample()"
+      >
+        載入 15 題範例
+      </button>
+
+      <button
+        class="btn small secondary"
+        onclick="openProjection()"
+      >
+        開啟學生投影視窗
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="tabbar">
+
+    <button
+      class="tab ${state.tab==='bank'?'active':''}"
+      onclick="
+        state.tab='bank';
+        render();
+      "
+    >
+      題庫編輯
+    </button>
+
+    <button
+      class="tab ${state.tab==='saved'?'active':''}"
+      onclick="
+        state.tab='saved';
+        render();
+      "
+    >
+      已儲存題庫
+    </button>
+
+    <button
+      class="tab ${state.tab==='session'?'active':''}"
+      onclick="
+        state.tab='session';
+        render();
+      "
+    >
+      測驗設定
+    </button>
+
+  </div>
+
+
+  ${
+    state.tab==='bank'
+    ?`
+
+    <div class="grid">
+
+      <div class="panel">
+
+        <h2>
+          🗝 建立題目
+        </h2>
+
+        <div>
+
+          <label>
+            題庫名稱
+          </label>
+
+          <input
+            value="${escapeHtml(state.title)}"
+            oninput="
+              state.title=this.value
+            "
+          >
+
+        </div>
+
+        <div>
+
+          <label>
+            中文提示
+          </label>
+
+          <input
+            id="hintInput"
+            placeholder="例如：不可思議的"
+          >
+
+        </div>
+
+        <div class="row2">
+
+          <div>
+
+            <label>
+              英文單字
+            </label>
+
+            <input
+              id="wordInput"
+              placeholder="例如：incredible"
+              onkeydown="
+                if(event.key==='Enter')
+                  addWord()
+              "
+            >
+
+          </div>
+
+          <div>
+
+            <label>
+              難度
+            </label>
+
+            <select id="levelSelect">
+
+              <option value="normal">
+                普通
+              </option>
+
+              <option value="hard">
+                困難
+              </option>
+
+              <option value="boss">
+                首領
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <button
+          class="btn secondary"
+          onclick="addWord()"
+        >
+          ＋ 加入題庫
+        </button>
+
+        <button
+          class="btn secondary"
+          onclick="saveCurrentSet()"
+        >
+          💾 儲存題庫
+        </button>
+
+        <div class="callout">
+
+          題庫可以先在課前建立並儲存。
+
+          上課時只需要載入題庫，
+          不必再把英文答案輸入在學生面前。
+
+        </div>
+
+      </div>
+
+
+      <div class="panel">
+
+        <h2>
+
+          📚 題庫
+
+          <span class="tag normal">
+
+            ${state.words.length} 題
+
+          </span>
+
+        </h2>
+
+        <div class="bank-list">
+
+          ${wordRows}
+
+        </div>
+
+        <button
+          class="btn small secondary"
+          onclick="clearWords()"
+        >
+          清空目前題庫
+        </button>
+
+      </div>
+
+    </div>
+
+    `
+    :
+    state.tab==='saved'
+    ?`
+
+    <div class="grid">
+
+      <div class="panel">
+
+        <h2>
+          💾 已儲存題庫
+        </h2>
+
+        <div class="bank-list">
+
+          ${sets}
+
+        </div>
+
+      </div>
+
+      <div class="panel">
+
+        <h2>
+          使用方式
+        </h2>
+
+        <div class="callout">
+
+          每個單元都可以存成獨立題庫。
+
+          例如：
+
+          Unit 3、
+          Unit 4、
+          期中複習。
+
+          下次直接載入即可，
+          不需要重新輸入。
+
+        </div>
+
+      </div>
+
+    </div>
+
+    `
+    :`
+
+    <div class="grid">
+
+      <div class="panel">
+
+        <h2>
+          ⚙ 測驗設定
+        </h2>
+
+        <div>
+
+          <label>
+            每題倒數時間（秒）
+          </label>
+
+          <input
+            type="number"
+            min="5"
+            max="180"
+            value="${state.timePerWord}"
+            oninput="
+              state.timePerWord=
+              parseInt(this.value)||25
+            "
+          >
+
+        </div>
+
+        <div>
+
+          <label>
+            本次抽幾題
+          </label>
+
+          <input
+            type="number"
+            min="1"
+            max="${Math.max(1,state.words.length)}"
+            value="${Math.min(state.selectedCount,Math.max(1,state.words.length))}"
+            oninput="
+              state.selectedCount=
+              parseInt(this.value)||1
+            "
+          >
+
+        </div>
+
+        <div>
+
+          <label>
+            出題順序
+          </label>
+
+          <select
+            onchange="
+              state.shuffle=
+              this.value==='random'
+            "
+          >
+
+            <option
+              value="random"
+              ${state.shuffle?'selected':''}
+            >
+              隨機抽題
+            </option>
+
+            <option
+              value="fixed"
+              ${!state.shuffle?'selected':''}
+            >
+              照題庫順序
+            </option>
+
+          </select>
+
+        </div>
+
+        <button
+          class="btn"
+          onclick="startGame()"
+          ${!state.words.length?'disabled':''}
+        >
+          ⚔ 開始闖關
+        </button>
+
+      </div>
+
+
+      <div class="panel">
+
+        <h2>
+          🖥 教室使用流程
+        </h2>
+
+        <div class="callout">
+
+          1. 課前建立並儲存題庫。
+          <br>
+
+          2. 上課載入題庫，
+          設定抽題數。
+          <br>
+
+          3. 開啟學生投影視窗。
+          <br>
+
+          4. 老師保留控制畫面，
+          學生只看到題目。
+          <br>
+
+          5. 測驗結束後，
+          可以直接進行錯題再挑戰。
+
+        </div>
+
+        <div class="projection-note">
+
+          如果使用延伸桌面，
+          可以把學生視窗放到投影機，
+          老師端則留在自己的電腦。
+
+        </div>
+
+      </div>
+
+    </div>
+
+    `
+  }
+
+
+  <div class="setup-footer">
+
+    <span class="hint">
+
+      題庫不限 6 題，
+      可以自行建立大量單字，
+      再決定每次抽幾題。
+
+    </span>
+
+    <button
+      class="btn secondary"
+      onclick="
+        state.tab='session';
+        render();
+      "
+    >
+      下一步：測驗設定 →
+    </button>
+
+  </div>
+
+  `;
+
+}
+
+function renderPlay(projection){
+
+  const w=
+    state.sessionWords[
+      state.current
+    ];
+
+  if(!w){
+
+    return renderProjectionWaiting();
+
+  }
+
+  const total=
+    state.sessionWords.length;
+
+  const level=
+    levelFromXp(
+      state.xp
+    );
+
+  const xpInLevel=
+    state.xp%100;
+
+  const hearts=
+    [0,1,2]
+    .map(
+      i=>`
+      <span class="heart ${i>=state.hearts?'lost':''}">
+        ❤️
+      </span>
+      `
+    )
+    .join('');
+
+  const map=
+    state.sessionWords
+    .map(
+      (word,idx)=>{
+
+        let cls=
+          'map-node'
+          +(word.level==='boss'
+          ?' boss'
+          :'');
+
+        let content=
+          idx+1;
+
+        if(
+          idx<state.current
+        ){
+
+          const r=
+            state.results[idx];
+
+          cls+=
+            r&&r.correct
+            ?' correct'
+            :' wrong';
+
+          content=
+            r&&r.correct
+            ?'✓'
+            :'✕';
+
+        }
+        else if(
+          idx===state.current
+        ){
+
+          cls+=' current';
+
+        }
+
+        return `
+
+          <div class="${cls}">
+
+            ${
+              word.level==='boss'
+              ?`<span>${content}</span>`
+              :content
+            }
+
+          </div>
+
+          ${
+            idx<total-1
+            ?'<div class="map-line"></div>'
+            :''
+          }
+
+        `;
+
+      }
+    )
+    .join('');
+
+  const tiles=
+    w.word
+    .split('')
+    .map(
+      ch=>
+        ch===' '
+        ?'<div style="width:16px"></div>'
+        :`
+
+        <div class="tile ${state.revealed?'revealed':''}">
+
+          ${
+            state.revealed
+            ?escapeHtml(
+              ch.toUpperCase()
+            )
+            :'<span class="tile-icon">🔒</span>'
+          }
+
+        </div>
+
+        `
+    )
+    .join('');
+
+  const tag=
+    w.level==='boss'
+    ?'⚠ 首領降臨'
+    :w.level==='hard'
+    ?'強化挑戰'
+    :'一般挑戰';
+
+  return `
+
+    <div class="hud">
+
+      <div class="hearts">
+
+        ${hearts}
+
+      </div>
+
+      <div class="hud-stat">
+
+        <div class="label">
+          關卡
+        </div>
+
+        <div class="val numeric">
+
+          ${state.current+1}
+          /
+          ${total}
+
+        </div>
+
+      </div>
+
+      <div class="hud-stat">
+
+        <div class="label">
+          連擊
+        </div>
+
+        <div class="val combo numeric">
+
+          ${
+            state.combo
+            ?'x'+state.combo
+            :'-'
+          }
+
+        </div>
+
+      </div>
+
+      <div class="xp-wrap">
+
+        <span class="xp-lv">
+
+          LV.${level}
+
+        </span>
+
+        <div class="xp-track">
+
+          <div
+            class="xp-fill"
+            style="width:${xpInLevel}%"
+          >
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="timer ${state.timeLeft<=5?'danger':''}">
+
+        ${state.timeLeft}s
+
+      </div>
+
+    </div>
+
+
+    <div class="map-row">
+
+      ${map}
+
+    </div>
+
+
+    <div class="card-wrap">
+
+      <div class="challenge-tag ${w.level}">
+
+        ${tag}
+
+      </div>
+
+      <div class="prompt-text">
+
+        ${escapeHtml(w.hint)}
+
+      </div>
+
+      <div class="hint">
+
+        ${w.word.replace(/ /g,'').length}
+        個字母
+
+        ·
+
+        解開封印字母
+
+      </div>
+
+      <div class="tiles-wrap">
+
+        ${tiles}
+
+      </div>
+
+    </div>
+
+
+    ${
+      projection
+      ?''
+      :`
+
+      <div class="play-controls">
+
+        ${
+          !state.revealed
+
+          ?`
+
+          <button
+            class="btn"
+            onclick="revealAnswer()"
+          >
+
+            🗝 解開封印
+
+          </button>
+
+          `
+
+          :`
+
+          <button
+            class="btn success"
+            onclick="markResult(true)"
+          >
+
+            ✓ 過關成功
+
+          </button>
+
+          <button
+            class="btn danger"
+            onclick="markResult(false)"
+          >
+
+            ✕ 挑戰失敗
+
+          </button>
+
+          `
+        }
+
+        <button
+          class="btn secondary"
+          onclick="backToSetup()"
+        >
+
+          返回教師端
+
+        </button>
+
+      </div>
+
+      `
+    }
+
+  `;
+
+}
+
+function renderEnd(projection){
+
+  const total=
+    state.results.length;
+
+  const correct=
+    state.results.filter(
+      r=>r.correct
+    ).length;
+
+  const accuracy=
+    total
+    ?correct/total
+    :0;
+
+  const comboScore=
+    total
+    ?Math.min(
+      state.maxCombo/total,
+      1
+    )
+    :0;
+
+  const composite=
+    accuracy*70
+    +
+    comboScore*30;
+
+  let rank='C';
+
+  let title=
+    '初心挑戰者';
+
+  if(
+    composite>=90
+  ){
+
+    rank='S';
+
+    title=
+      '傳說拼字大師';
+
+  }
+  else if(
+    composite>=75
+  ){
+
+    rank='A';
+
+    title=
+      '詞彙獵人';
+
+  }
+  else if(
+    composite>=55
+  ){
+
+    rank='B';
+
+    title=
+      '見習冒險者';
+
+  }
+
+  const review=
+    state.results
+    .map(
+      r=>`
+
+      <div class="review-row ${r.correct?'hit':'miss'}">
+
+        <span>
+
+          ${escapeHtml(r.hint)}
+
+          <span class="word-en">
+
+            ${escapeHtml(r.word)}
+
+          </span>
+
+        </span>
+
+        <span>
+
+          ${
+            r.correct
+            ?'✓ +'+r.gained+' XP'
+            :'✕'
+          }
+
+        </span>
+
+      </div>
+
+      `
+    )
+    .join('');
+
+  const wrong=
+    state.results.filter(
+      r=>!r.correct
+    ).length;
+
+  return `
+
+    <div class="end-wrap">
+
+      <div style="font-size:60px">
+        🎁
+      </div>
+
+      <div>
+
+        <div class="rank">
+
+          RANK ${rank}
+
+        </div>
+
+        <div
+          class="sub"
+          style="text-align:center"
+        >
+
+          ${title}
+
+        </div>
+
+      </div>
+
+      <div class="stats">
+
+        <div class="stat">
+
+          <div class="label">
+            正確率
+          </div>
+
+          <div class="val">
+
+            ${
+              Math.round(
+                accuracy*100
+              )
+            }%
+
+          </div>
+
+        </div>
+
+        <div class="stat">
+
+          <div class="label">
+            最高連擊
+          </div>
+
+          <div class="val">
+
+            x${state.maxCombo}
+
+          </div>
+
+        </div>
+
+        <div class="stat">
+
+          <div class="label">
+            錯題
+          </div>
+
+          <div class="val">
+
+            ${wrong}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="review">
+
+        ${review}
+
+      </div>
+
+      ${
+        projection
+        ?''
+        :`
+
+        <div class="play-controls">
+
+          ${
+            wrong
+
+            ?`
+
+            <button
+              class="btn"
+              onclick="retryWrong()"
+            >
+
+              ↻ 錯題再挑戰
+
+            </button>
+
+            `
+
+            :''
+          }
+
+          <button
+            class="btn secondary"
+            onclick="backToSetup()"
+          >
+
+            返回教師端
+
+          </button>
+
+        </div>
+
+        `
+      }
+
+    </div>
+
+  `;
+
 }
 
 render();
+
 </script>
+
 </body>
 </html>
